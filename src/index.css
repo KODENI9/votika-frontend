@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #e85d04;
+  --color-brand-hover: #dc2f02;
+  --color-brand-light: #ffba08;
+  --color-brand-dark: #9d0208;
+  --color-background: #faf9f6; /* Off-white/cream */
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  
+  --font-sans: "Inter", "Roobert", system-ui, -apple-system, sans-serif;
+  --font-display: "Clash Display", "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text font-sans antialiased;
+  }
+}
