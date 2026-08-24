@@ -20,9 +20,13 @@ export default async function handler(req, res) {
       const image = creator.avatarUrl || 'https://ui-avatars.com/api/?background=e85d04&color=fff&size=512&name=' + encodeURIComponent(creator.displayName);
 
       // Replace generic title
-      html = html.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+      html = html.replace(/<title>.*?<\/title>/gi, `<title>${title}</title>`);
       
-      // Inject OG and Twitter tags
+      // Remove existing OG / Twitter tags from the base index.html
+      html = html.replace(/<meta\s+property="og:[^>]+>/gi, '');
+      html = html.replace(/<meta\s+name="twitter:[^>]+>/gi, '');
+      
+      // Inject our new OG and Twitter tags
       const ogTags = `
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
