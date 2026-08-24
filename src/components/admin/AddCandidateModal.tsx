@@ -89,11 +89,11 @@ export const AddCandidateModal = ({ isOpen, onClose }: AddCandidateModalProps) =
       if (data.secure_url) {
         setForm((prev) => ({ ...prev, avatarUrl: data.secure_url }));
       } else {
-        throw new Error('Erreur lors de l\\'upload de l\\'image : ' + (data.error?.message || 'Inconnue'));
+        throw new Error("Erreur lors de l'upload de l'image : " + (data.error?.message || "Inconnue"));
       }
     } catch (err) {
       console.error(err);
-      setError('Impossible de télécharger l\\'image sur Cloudinary. Vérifiez votre Upload Preset.');
+      setError("Impossible de télécharger l'image sur Cloudinary. Vérifiez votre Upload Preset.");
     } finally {
       setIsUploading(false);
     }
