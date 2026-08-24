@@ -101,6 +101,10 @@ export const AddCandidateModal = ({ isOpen, onClose }: AddCandidateModalProps) =
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.avatarUrl) {
+      setError("Veuillez attendre la fin du téléchargement de l'image ou vérifier que l'image s'est bien envoyée.");
+      return;
+    }
     setError('');
     createMutation.mutate(form);
   };
