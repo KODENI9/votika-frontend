@@ -4,11 +4,7 @@ import { Minus, Plus, Lock, Loader2 } from 'lucide-react';
 import type { Creator } from '@/types';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubmitVote } from '@/hooks/useSubmitVote';
-import { PaymentMethodSelector } from './PaymentMethodSelector';
-import type { PaymentMethod } from './PaymentMethodSelector';
 import { Button } from '@/components/common/Button';
-
-const PHONE_REGEX = /^[0-9]{8,15}$/;
 
 interface VotePanelProps {
   creator: Creator;
@@ -22,39 +18,22 @@ export const VotePanel = ({ creator }: VotePanelProps) => {
   const unitPrice = settings?.voteUnitPrice ?? 200;
 
   const [voteCount, setVoteCount] = useState(5);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [voterPhone, setVoterPhone] = useState('');
-  const [voterName, setVoterName] = useState('');
-  const [errors, setErrors] = useState<{ phone?: string; method?: string; general?: string }>({});
+  const [errors, setErrors] = useState<{ general?: string }>({});
 
   const totalAmount = voteCount * unitPrice;
 
   const handleDecrement = () => setVoteCount((c) => Math.max(1, c - 1));
   const handleIncrement = () => setVoteCount((c) => c + 1);
 
-  const validate = () => {
-    const newErrors: typeof errors = {};
-    if (!voterPhone || !PHONE_REGEX.test(voterPhone)) {
-      newErrors.phone = 'Numéro de téléphone invalide (ex: 22890000000)';
-    }
-    if (!paymentMethod) {
-      newErrors.method = 'Sélectionnez un moyen de paiement';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate() || !paymentMethod) return;
 
     try {
       const response = await submitVote({
         creatorId: creator.id,
         voteCount,
-        voterPhone,
-        voterName: voterName.trim() || undefined,
-        paymentMethod,
       });
 
       // Store voteId in sessionStorage for the confirmation page
@@ -120,49 +99,6 @@ export const VotePanel = ({ creator }: VotePanelProps) => {
         <span className="text-xl font-extrabold text-[var(--color-brand)]">
           {totalAmount.toLocaleString()} FCFA
         </span>
-      </div>
-
-      {/* Payment method */}
-      <div>
-        <label className="text-sm font-semibold text-[var(--color-text)] block mb-3">
-          Moyen de paiement
-        </label>
-        <PaymentMethodSelector
-          value={paymentMethod}
-          onChange={setPaymentMethod}
-          error={errors.method}
-        />
-      </div>
-
-      {/* Phone */}
-      <div>
-        <label htmlFor="voterPhone" className="text-sm font-semibold text-[var(--color-text)] block mb-2">
-          Numéro de téléphone <span className="text-red-500">*</span>
-        </label>
-        <input
-          id="voterPhone"
-          type="tel"
-          value={voterPhone}
-          onChange={(e) => setVoterPhone(e.target.value.replace(/\D/g, ''))}
-          placeholder="ex: 22890000000"
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent transition"
-        />
-        {errors.phone && <p className="mt-1.5 text-xs text-red-500">{errors.phone}</p>}
-      </div>
-
-      {/* Name (optional) */}
-      <div>
-        <label htmlFor="voterName" className="text-sm font-semibold text-[var(--color-text)] block mb-2">
-          Votre nom <span className="text-[var(--color-text-muted)] font-normal">(optionnel)</span>
-        </label>
-        <input
-          id="voterName"
-          type="text"
-          value={voterName}
-          onChange={(e) => setVoterName(e.target.value)}
-          placeholder="ex: Moussa Diallo"
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent transition"
-        />
       </div>
 
       {errors.general && (

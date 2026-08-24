@@ -6,8 +6,8 @@ interface SubmitVotePayload {
   creatorId: string;
   voteCount: number;
   voterName?: string;
-  voterPhone: string;
-  paymentMethod: 'orange' | 'wave' | 'mtn' | 'flooz' | 'mix_by_yas';
+  voterPhone?: string;
+  paymentMethod?: 'orange' | 'wave' | 'mtn' | 'flooz' | 'mix_by_yas';
 }
 
 export const useSubmitVote = () => {
