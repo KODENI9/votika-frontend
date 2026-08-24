@@ -63,14 +63,39 @@ export const AddCandidateModal = ({ isOpen, onClose }: AddCandidateModalProps) =
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setForm((prev) => ({ ...prev, avatarUrl: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      setError('');
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'votika_avatars'); // Replace with your exact upload preset name if different
+      formData.append('cloud_name', 'dpqc6owhs'); // Your Cloudinary cloud name
+
+      // Request to Cloudinary Unsigned Upload API
+      const response = await fetch('https://api.cloudinary.com/v1_1/dpqc6owhs/image/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      if (data.secure_url) {
+        setForm((prev) => ({ ...prev, avatarUrl: data.secure_url }));
+      } else {
+        throw new Error('Erreur lors de l\\'upload de l\\'image : ' + (data.error?.message || 'Inconnue'));
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Impossible de télécharger l\\'image sur Cloudinary. Vérifiez votre Upload Preset.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -181,13 +206,17 @@ export const AddCandidateModal = ({ isOpen, onClose }: AddCandidateModalProps) =
                     <img src={form.avatarUrl} alt="Preview" className="h-full w-full object-cover" />
                   </div>
                 )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  required={!form.avatarUrl}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent transition file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600"
-                />
+                <div className="w-full">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    required={!form.avatarUrl}
+                    disabled={isUploading}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] focus:border-transparent transition file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600 disabled:opacity-50"
+                  />
+                  {isUploading && <p className="text-sm text-orange-500 mt-2">Envoi de l'image sur Cloudinary en cours...</p>}
+                </div>
               </div>
             </div>
 
@@ -211,8 +240,8 @@ export const AddCandidateModal = ({ isOpen, onClose }: AddCandidateModalProps) =
             <Button
               type="submit"
               variant="primary"
-              isLoading={createMutation.isPending}
-              disabled={createMutation.isPending}
+              isLoading={createMutation.isPending || isUploading}
+              disabled={createMutation.isPending || isUploading}
             >
               Créer le candidat
             </Button>
