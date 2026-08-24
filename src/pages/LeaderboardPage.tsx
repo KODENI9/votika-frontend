@@ -44,7 +44,7 @@ const PodiumCard = ({
   };
 
   const config = configs[rank];
-  const avatarSrc = creator.avatarUrl || `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.name)}`;
+  const avatarSrc = creator.avatarUrl || `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.displayName)}`;
 
   return (
     <Link
@@ -57,11 +57,11 @@ const PodiumCard = ({
         )}
         <img
           src={avatarSrc}
-          alt={creator.name}
+          alt={creator.displayName}
           className={`${config.size} rounded-full object-cover ${config.ring} group-hover:scale-105 transition-transform duration-200`}
           onError={(e) => {
             const t = e.target as HTMLImageElement;
-            t.src = `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.name)}`;
+            t.src = `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.displayName)}`;
           }}
         />
         <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs font-extrabold px-2 py-0.5 rounded-full ${config.label}`}>
@@ -69,10 +69,10 @@ const PodiumCard = ({
         </div>
       </div>
       <div className="mt-3">
-        <p className={`font-extrabold text-[var(--color-text)] ${config.nameSize}`}>{creator.name}</p>
+        <p className={`font-extrabold text-[var(--color-text)] ${config.nameSize}`}>{creator.displayName}</p>
         <div className="flex items-center gap-1 justify-center text-[var(--color-text-muted)] text-sm mt-1">
           <ThumbsUp className="h-3.5 w-3.5" />
-          <span className="font-semibold">{creator.voteCount.toLocaleString()}</span>
+          <span className="font-semibold">{creator.totalVotes.toLocaleString()}</span>
         </div>
       </div>
     </Link>
@@ -89,7 +89,7 @@ export const LeaderboardPage = () => {
   const rest = allCreators.slice(3);
 
   const filtered = rest.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
+    c.displayName.toLowerCase().includes(search.toLowerCase())
   );
 
   const visible = filtered.slice(0, visibleCount);
@@ -161,16 +161,16 @@ export const LeaderboardPage = () => {
                     <span className="text-lg font-extrabold text-[var(--color-text-muted)]">{rank}</span>
                     <div className="flex items-center gap-3">
                       <img
-                        src={creator.avatarUrl || `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.name)}`}
-                        alt={creator.name}
+                        src={creator.avatarUrl || `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.displayName)}`}
+                        alt={creator.displayName}
                         className="h-10 w-10 rounded-full object-cover shrink-0"
                         onError={(e) => {
                           const t = e.target as HTMLImageElement;
-                          t.src = `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.name)}`;
+                          t.src = `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.displayName)}`;
                         }}
                       />
                       <span className="font-bold text-[var(--color-text)] group-hover:text-[var(--color-brand)] transition-colors">
-                        {creator.name}
+                        {creator.displayName}
                       </span>
                     </div>
                     <div className="flex items-center gap-1 text-green-500 text-sm">
@@ -178,7 +178,7 @@ export const LeaderboardPage = () => {
                       <span className="font-medium">+5%</span>
                     </div>
                     <span className="text-right font-extrabold text-[var(--color-text)]">
-                      {creator.voteCount.toLocaleString()}
+                      {creator.totalVotes.toLocaleString()}
                     </span>
                   </Link>
                 );

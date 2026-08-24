@@ -4,7 +4,7 @@ import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { Button } from '@/components/common/Button';
 import { Settings, Save, AlertCircle } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 
 export const AdminSettingsPage = () => {
   const { data: settings, isLoading, isError, refetch } = useAdminSettings();
@@ -29,7 +29,7 @@ export const AdminSettingsPage = () => {
   }, [settings]);
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Erreur lors du chargement des paramètres." onRetry={() => refetch()} />;
+  if (isError) return <ErrorState message="Erreur lors du chargement des paramètres." retry={() => refetch()} />;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

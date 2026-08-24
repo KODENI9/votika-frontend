@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAdminTransactions } from '@/hooks/useAdmin';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
-import { Search, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import type { TransactionStatus } from '@/types';
 import { format } from 'date-fns';
 
@@ -36,7 +36,7 @@ export const AdminTransactionsPage = () => {
   );
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Erreur lors du chargement des transactions." onRetry={() => refetch()} />;
+  if (isError) return <ErrorState message="Erreur lors du chargement des transactions." retry={() => refetch()} />;
 
   const transactions = data?.data || [];
 

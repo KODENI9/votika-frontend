@@ -11,7 +11,7 @@ export const CandidatesTable = () => {
   const deleteCreator = useDeleteCreator();
 
   if (isLoading) return <LoadingState />;
-  if (isError) return <ErrorState message="Erreur lors du chargement des candidats." onRetry={() => refetch()} />;
+  if (isError) return <ErrorState message="Erreur lors du chargement des candidats." retry={() => refetch()} />;
 
   const creators = data?.data || [];
 

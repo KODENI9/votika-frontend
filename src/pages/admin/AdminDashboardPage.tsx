@@ -141,7 +141,7 @@ export const AdminDashboardPage = () => {
                 <YAxis hide />
                 <Tooltip
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: number) => [`${value.toLocaleString()} FCFA`, 'Revenue']}
+                  formatter={(value) => [`${Number(value).toLocaleString()} FCFA`, 'Revenue']}
                 />
                 <Area
                   type="monotone"

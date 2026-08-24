@@ -17,7 +17,7 @@ export const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) 
   if (!isLoaded || (isSignedIn && !user)) return <LoadingState message="Vérification des accès..." />;
   if (!isSignedIn) return <Navigate to="/" replace />;
 
-  const userRole = (user.publicMetadata as { role?: string })?.role;
+  const userRole = (user!.publicMetadata as { role?: string })?.role;
 
   if (requiredRole === 'admin' && userRole !== 'admin') {
     return <Navigate to="/" replace />;
