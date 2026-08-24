@@ -13,8 +13,8 @@ interface SubmitVotePayload {
 export const useSubmitVote = () => {
   return useMutation({
     mutationFn: async (payload: SubmitVotePayload) => {
-      const { data } = await apiClient.post<VoteResponse>('/votes', payload);
-      return data;
+      const { data } = await apiClient.post<{ data: VoteResponse }>('/votes', payload);
+      return data.data;
     }
   });
 };
