@@ -17,7 +17,12 @@ export default async function handler(req, res) {
     if (creator) {
       const title = `Votez pour ${creator.displayName} sur Votika !`;
       const description = creator.bio || `Soutenez ${creator.displayName} dans la compétition avec Votika.`;
-      const image = creator.avatarUrl || 'https://ui-avatars.com/api/?background=e85d04&color=fff&size=512&name=' + encodeURIComponent(creator.displayName);
+      
+      // WhatsApp/Facebook reject base64 (data:image...) and complex search URLs
+      let image = creator.avatarUrl;
+      if (!image || image.startsWith('data:') || image.includes('google.com/imgres')) {
+        image = 'https://ui-avatars.com/api/?background=e85d04&color=fff&size=512&name=' + encodeURIComponent(creator.displayName);
+      }
 
       // Replace generic title
       html = html.replace(/<title>.*?<\/title>/gi, `<title>${title}</title>`);
