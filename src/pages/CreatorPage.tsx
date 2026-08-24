@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { MapPin, Activity, TrendingUp } from 'lucide-react';
 import { useCreator } from '@/hooks/useCreator';
 import { VotePanel } from '@/components/vote/VotePanel';
+import { CreatorShareWidget } from '@/components/creator/CreatorShareWidget';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 
@@ -65,6 +66,9 @@ export const CreatorPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Share Widget */}
+            <CreatorShareWidget creator={creator} />
 
             {/* About */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
