@@ -84,7 +84,7 @@ export const LeaderboardPage = () => {
   const [visibleCount, setVisibleCount] = useState(10);
   const { data, isLoading, isError, refetch } = useLeaderboard();
 
-  const allCreators = data?.leaderboard ?? [];
+  const allCreators = data?.data ?? [];
   const top3 = allCreators.slice(0, 3) as Creator[];
   const rest = allCreators.slice(3);
 

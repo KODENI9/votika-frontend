@@ -6,7 +6,7 @@ export const useLeaderboard = (params?: { page?: number; limit?: number }) => {
   return useQuery({
     queryKey: ['leaderboard', params],
     queryFn: async () => {
-      const { data } = await apiClient.get<{ leaderboard: Creator[], total: number }>('/leaderboard', { params });
+      const { data } = await apiClient.get<{ data: Creator[], count: number }>('/leaderboard', { params });
       return data;
     }
   });
