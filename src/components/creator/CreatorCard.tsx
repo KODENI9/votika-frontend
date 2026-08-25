@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, ThumbsUp, User } from 'lucide-react';
 import type { Creator } from '@/types';
 import { Button } from '@/components/common/Button';
@@ -14,6 +14,7 @@ interface CreatorCardProps {
 }
 
 export const CreatorCard = ({ creator, rank, className }: CreatorCardProps) => {
+  const navigate = useNavigate();
   const { data: settings } = useSettings();
   const avatarSrc = creator.avatarUrl
     ? creator.avatarUrl
@@ -22,10 +23,15 @@ export const CreatorCard = ({ creator, rank, className }: CreatorCardProps) => {
   const isExpired = settings?.campaignEndDate ? new Date() > new Date(settings.campaignEndDate) : false;
   const isVotingDisabled = settings && !settings.campaignActive;
 
+  const handleClick = () => {
+    navigate(`/creator/${creator.id}`);
+  };
+
   return (
     <div
+      onClick={handleClick}
       className={cn(
-        'bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col group relative',
+        'bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col group relative cursor-pointer',
         className
       )}
     >
@@ -82,11 +88,11 @@ export const CreatorCard = ({ creator, rank, className }: CreatorCardProps) => {
             {isExpired ? "Terminé" : "Indisponible"}
           </Button>
         ) : (
-          <Link to={`/creator/${creator.id}`} className="mt-2 hover:no-underline">
+          <div className="mt-2">
             <Button variant="primary" size="sm" className="w-full">
               Voter
             </Button>
-          </Link>
+          </div>
         )}
       </div>
     </div>
