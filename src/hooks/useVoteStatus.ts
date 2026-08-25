@@ -6,10 +6,10 @@ export const useVoteStatus = (voteId: string, token: string | null) => {
   return useQuery({
     queryKey: ['voteStatus', voteId, token],
     queryFn: async () => {
-      const { data } = await apiClient.get<VoteStatusResponse>(`/votes/${voteId}/status`, {
+      const { data } = await apiClient.get<{ data: VoteStatusResponse }>(`/votes/${voteId}/status`, {
         params: { token }
       });
-      return data;
+      return data.data;
     },
     enabled: !!voteId,
     refetchInterval: (query) => {
