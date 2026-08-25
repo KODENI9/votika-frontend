@@ -1,6 +1,8 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { MapPin, Activity, TrendingUp } from 'lucide-react';
 import { useCreator } from '@/hooks/useCreator';
+import { useVoteStatus } from '@/hooks/useVoteStatus';
 import { VotePanel } from '@/components/vote/VotePanel';
 import { CreatorShareWidget } from '@/components/creator/CreatorShareWidget';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -10,7 +12,29 @@ const FALLBACK_AVATAR = 'https://ui-avatars.com/api/?background=e85d04&color=fff
 
 export const CreatorPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const verifyVoteId = searchParams.get('verifyVote');
+  const token = searchParams.get('token');
+
   const { data: creator, isLoading, isError, refetch } = useCreator(id ?? '');
+  const { data: voteData } = useVoteStatus(verifyVoteId ?? '', token);
+
+  // Poll for vote confirmation when returning from MoneyFusion
+  useEffect(() => {
+    if (voteData?.status === 'SUCCESS') {
+      alert(`🎉 Paiement réussi ! Les votes ont été ajoutés à ${creator?.displayName || 'ce créateur'}.`);
+      refetch(); // Update votes
+      searchParams.delete('verifyVote');
+      searchParams.delete('token');
+      setSearchParams(searchParams);
+    } else if (voteData?.status === 'FAILED') {
+      alert(`Le paiement a échoué. Aucun vote n'a été déduit.`);
+      searchParams.delete('verifyVote');
+      searchParams.delete('token');
+      setSearchParams(searchParams);
+    }
+  }, [voteData?.status, creator?.displayName, refetch, searchParams, setSearchParams]);
 
   if (isLoading) return <LoadingState message="Chargement du profil..." />;
   if (isError || !creator) return (
@@ -26,6 +50,16 @@ export const CreatorPage = () => {
 
   return (
     <div className="bg-[var(--color-background)] min-h-screen">
+      {/* Loading overlay for pending votes */}
+      {voteData?.status === 'PENDING' && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center max-w-sm w-full mx-4">
+            <LoadingState message="Vérification de votre paiement en cours..." />
+            <p className="text-xs text-center text-gray-500 mt-4">Veuillez patienter, cette fenêtre se fermera automatiquement.</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] mb-6">
