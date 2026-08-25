@@ -142,11 +142,11 @@ export const LeaderboardPage = () => {
         ) : (
           <>
             {/* Table header */}
-            <div className="grid grid-cols-[60px_1fr_120px_100px] text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider px-4 mb-2">
+            <div className="grid grid-cols-[40px_1fr_80px] sm:grid-cols-[60px_1fr_120px_100px] gap-2 text-[10px] sm:text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider px-2 sm:px-4 mb-2">
               <span>Rang</span>
               <span>Candidat</span>
-              <span>Tendance (24h)</span>
-              <span className="text-right">Total votes</span>
+              <span className="hidden sm:block">Tendance (24h)</span>
+              <span className="text-right">Votes</span>
             </div>
 
             <div className="flex flex-col gap-2">
@@ -156,28 +156,28 @@ export const LeaderboardPage = () => {
                   <Link
                     key={creator.id}
                     to={`/creators/${creator.id}`}
-                    className="grid grid-cols-[60px_1fr_120px_100px] items-center bg-white rounded-xl px-4 py-4 shadow-sm hover:shadow-md transition-shadow hover:no-underline group"
+                    className="grid grid-cols-[40px_1fr_80px] sm:grid-cols-[60px_1fr_120px_100px] gap-2 items-center bg-white rounded-xl px-2 sm:px-4 py-3 sm:py-4 shadow-sm hover:shadow-md transition-shadow hover:no-underline group"
                   >
-                    <span className="text-lg font-extrabold text-[var(--color-text-muted)]">{rank}</span>
-                    <div className="flex items-center gap-3">
+                    <span className="text-base sm:text-lg font-extrabold text-[var(--color-text-muted)]">{rank}</span>
+                    <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
                       <img
                         src={creator.avatarUrl || `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.displayName)}`}
                         alt={creator.displayName}
-                        className="h-10 w-10 rounded-full object-cover shrink-0"
+                        className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover shrink-0"
                         onError={(e) => {
                           const t = e.target as HTMLImageElement;
                           t.src = `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.displayName)}`;
                         }}
                       />
-                      <span className="font-bold text-[var(--color-text)] group-hover:text-[var(--color-brand)] transition-colors">
+                      <span className="font-bold text-sm sm:text-base text-[var(--color-text)] truncate group-hover:text-[var(--color-brand)] transition-colors">
                         {creator.displayName}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 text-green-500 text-sm">
+                    <div className="hidden sm:flex items-center gap-1 text-green-500 text-sm">
                       <TrendingUp className="h-4 w-4" />
                       <span className="font-medium">+5%</span>
                     </div>
-                    <span className="text-right font-extrabold text-[var(--color-text)]">
+                    <span className="text-right font-extrabold text-[var(--color-text)] text-sm sm:text-base">
                       {creator.totalVotes.toLocaleString()}
                     </span>
                   </Link>
