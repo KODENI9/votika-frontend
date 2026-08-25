@@ -3,6 +3,7 @@ import { MapPin, ThumbsUp, User } from 'lucide-react';
 import type { Creator } from '@/types';
 import { Button } from '@/components/common/Button';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/hooks/useSettings';
 
 const FALLBACK_AVATAR = 'https://ui-avatars.com/api/?background=e85d04&color=fff&size=256';
 
@@ -13,19 +14,30 @@ interface CreatorCardProps {
 }
 
 export const CreatorCard = ({ creator, rank, className }: CreatorCardProps) => {
+  const { data: settings } = useSettings();
   const avatarSrc = creator.avatarUrl
     ? creator.avatarUrl
     : `${FALLBACK_AVATAR}&name=${encodeURIComponent(creator.displayName)}`;
 
+  const isExpired = settings?.campaignEndDate ? new Date() > new Date(settings.campaignEndDate) : false;
+  const isVotingDisabled = settings && !settings.campaignActive;
+
   return (
     <div
       className={cn(
-        'bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col group',
+        'bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col group relative',
         className
       )}
     >
+      {/* Badge Vote Terminé */}
+      {isExpired && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-black/80 text-white px-4 py-2 rounded-xl font-bold backdrop-blur-sm whitespace-nowrap rotate-[-10deg] shadow-xl border border-white/20">
+          VOTE TERMINÉ
+        </div>
+      )}
+
       {/* Avatar Area */}
-      <div className="relative bg-[#f5ede8] pt-4 px-4 flex justify-center">
+      <div className={cn("relative bg-[#f5ede8] pt-4 px-4 flex justify-center", isExpired && "opacity-70 grayscale transition-all duration-300")}>
         {rank !== undefined && (
           <div className="absolute top-3 left-3 bg-white rounded-full text-xs font-bold text-[var(--color-brand)] border border-[var(--color-brand)] px-2 py-0.5 shadow-sm">
             #{rank}
@@ -48,7 +60,7 @@ export const CreatorCard = ({ creator, rank, className }: CreatorCardProps) => {
       </div>
 
       {/* Info */}
-      <div className="p-4 flex flex-col flex-1 gap-2">
+      <div className={cn("p-4 flex flex-col flex-1 gap-2", isExpired && "opacity-80")}>
         <h3 className="font-bold text-[var(--color-text)] text-base leading-tight">{creator.displayName}</h3>
         <div className="flex items-center gap-1 text-[var(--color-text-muted)] text-xs">
           <User className="h-3 w-3 shrink-0" />
@@ -64,11 +76,18 @@ export const CreatorCard = ({ creator, rank, className }: CreatorCardProps) => {
         {creator.bio && (
           <p className="text-[var(--color-text-muted)] text-xs line-clamp-2 flex-1">{creator.bio}</p>
         )}
-        <Link to={`/creator/${creator.id}`} className="mt-2 hover:no-underline">
-          <Button variant="primary" size="sm" className="w-full">
-            Voter
+        
+        {isVotingDisabled ? (
+          <Button variant="secondary" size="sm" className="w-full mt-2 cursor-not-allowed opacity-50 pointer-events-none">
+            {isExpired ? "Terminé" : "Indisponible"}
           </Button>
-        </Link>
+        ) : (
+          <Link to={`/creator/${creator.id}`} className="mt-2 hover:no-underline">
+            <Button variant="primary" size="sm" className="w-full">
+              Voter
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   );

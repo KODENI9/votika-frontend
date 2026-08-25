@@ -75,7 +75,7 @@ export const VotePanel = ({ creator }: VotePanelProps) => {
           <button
             type="button"
             onClick={handleDecrement}
-            disabled={voteCount <= 1}
+            disabled={voteCount <= 1 || (settings && !settings.campaignActive)}
             aria-label="Diminuer"
             className="h-10 w-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-[var(--color-text-muted)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
@@ -85,8 +85,9 @@ export const VotePanel = ({ creator }: VotePanelProps) => {
           <button
             type="button"
             onClick={handleIncrement}
+            disabled={settings && !settings.campaignActive}
             aria-label="Augmenter"
-            className="h-10 w-10 rounded-full bg-[var(--color-brand)] flex items-center justify-center text-white hover:bg-[var(--color-brand-hover)] transition-colors"
+            className="h-10 w-10 rounded-full bg-[var(--color-brand)] flex items-center justify-center text-white hover:bg-[var(--color-brand-hover)] disabled:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -108,12 +109,21 @@ export const VotePanel = ({ creator }: VotePanelProps) => {
       )}
 
       {/* Submit */}
-      <Button type="submit" variant="primary" size="lg" isLoading={isPending} className="w-full">
+      <Button 
+        type="submit" 
+        variant="primary" 
+        size="lg" 
+        isLoading={isPending} 
+        disabled={isPending || (settings && !settings.campaignActive)} 
+        className="w-full"
+      >
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Traitement...
           </>
+        ) : settings && !settings.campaignActive ? (
+          <>Votes fermés</>
         ) : (
           <>Payer &amp; Valider le vote →</>
         )}

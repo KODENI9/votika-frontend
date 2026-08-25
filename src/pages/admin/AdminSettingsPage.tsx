@@ -5,6 +5,7 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { Button } from '@/components/common/Button';
 import { Settings, Save, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 export const AdminSettingsPage = () => {
   const { data: settings, isLoading, isError, refetch } = useAdminSettings();
@@ -16,6 +17,8 @@ export const AdminSettingsPage = () => {
     campaignStartDate: '',
     campaignEndDate: '',
   });
+
+  const isExpired = form.campaignEndDate ? new Date() > new Date(form.campaignEndDate) : false;
 
   useEffect(() => {
     if (settings) {
@@ -84,20 +87,28 @@ export const AdminSettingsPage = () => {
           
           <div className="space-y-6 max-w-xl">
             {/* Toggle */}
-            <label className="flex items-center cursor-pointer p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+            <label className={cn(
+              "flex items-center p-4 border border-gray-200 rounded-xl transition-colors",
+              isExpired ? "opacity-50 cursor-not-allowed bg-gray-50" : "cursor-pointer hover:bg-gray-50"
+            )}>
               <div className="relative">
                 <input 
                   type="checkbox" 
                   className="sr-only" 
-                  checked={form.campaignActive}
+                  checked={form.campaignActive && !isExpired}
+                  disabled={isExpired}
                   onChange={(e) => setForm(prev => ({ ...prev, campaignActive: e.target.checked }))}
                 />
-                <div className={`block w-14 h-8 rounded-full transition-colors ${form.campaignActive ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${form.campaignActive ? 'transform translate-x-6' : ''}`}></div>
+                <div className={`block w-14 h-8 rounded-full transition-colors ${form.campaignActive && !isExpired ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${form.campaignActive && !isExpired ? 'transform translate-x-6' : ''}`}></div>
               </div>
               <div className="ml-4">
                 <div className="font-medium text-gray-900">Activer la campagne de vote</div>
-                <div className="text-sm text-gray-500">Si désactivé, aucun utilisateur ne pourra voter.</div>
+                <div className="text-sm text-gray-500">
+                  {isExpired 
+                    ? "La date de fin est dépassée, la campagne est automatiquement désactivée." 
+                    : "Si désactivé, aucun utilisateur ne pourra voter."}
+                </div>
               </div>
             </label>
 
